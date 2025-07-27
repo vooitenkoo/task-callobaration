@@ -1,0 +1,63 @@
+package com.example.task_collaboration.domain.service;
+
+import com.example.task_collaboration.application.dto.ProfileRequestDTO;
+import com.example.task_collaboration.application.dto.ProfileResponseDTO;
+import com.example.task_collaboration.application.mapper.ProfileMapperImpl;
+import com.example.task_collaboration.domain.model.Profile;
+import com.example.task_collaboration.domain.model.User;
+import com.example.task_collaboration.domain.repository.ProfileRepository;
+
+import com.example.task_collaboration.infrastructure.exсeption.ProfileNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+
+@Service
+public class ProfileServiceImpl implements ProfileService {
+    private static final Logger logger = LoggerFactory.getLogger(ProfileServiceImpl.class);
+    private final ProfileRepository profileRepository;
+    private final MinioService minioStorageService;
+    private final ProfileMapperImpl profileMapper;
+
+    @Autowired
+    public ProfileServiceImpl(ProfileRepository profileRepository, MinioService minioStorageService, ProfileMapperImpl profileMapper) {
+        this.profileRepository = profileRepository;
+        this.minioStorageService = minioStorageService;
+        this.profileMapper = profileMapper;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProfileResponseDTO getProfileByUserId(Long userId) {
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ProfileNotFoundException(userId));
+        logger.debug("Profile from DB: {}", profile);
+        return profileMapper.toDto(profile);
+    }
+
+    @Override
+    @Transactional
+    public ProfileResponseDTO updateProfile(User currentUser, ProfileRequestDTO profileRequest) {
+        Profile existingProfile = profileRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new ProfileNotFoundException(currentUser.getId()));
+
+        if (profileRequest.getAvatarFile() != null && !profileRequest.getAvatarFile().isEmpty()) {
+            try {
+                String avatarUrl = minioStorageService.uploadAvatar(profileRequest.getAvatarFile());
+                existingProfile.setAvatarUrl(avatarUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload avatar: " + e.getMessage(), e);
+            }
+        }
+
+        profileMapper.updateProfileFromDto(profileRequest, existingProfile);
+        existingProfile.setUpdatedAt(Instant.now());
+        profileRepository.save(existingProfile);
+
+        return profileMapper.toDto(existingProfile);
+    }
+}
