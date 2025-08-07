@@ -1,0 +1,4 @@
+ALTER TABLE project_members DROP CONSTRAINT IF EXISTS project_members_pkey;
+ALTER TABLE project_members DROP COLUMN id;
+ALTER TABLE project_members ADD COLUMN id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY;
+

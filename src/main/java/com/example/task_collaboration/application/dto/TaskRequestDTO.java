@@ -3,6 +3,7 @@ package com.example.task_collaboration.application.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -14,7 +15,8 @@ public record TaskRequestDTO(
         String description,
         Instant deadline,
         String status,
+        @Schema(type = "string", format = "binary", description = "File to upload")
         MultipartFile file,
-        Long assigneeId,
+        UUID assigneeId,
         UUID projectId
 ) {}

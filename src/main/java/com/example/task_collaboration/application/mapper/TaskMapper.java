@@ -3,7 +3,10 @@ package com.example.task_collaboration.application.mapper;
 import com.example.task_collaboration.application.dto.TaskRequestDTO;
 import com.example.task_collaboration.application.dto.TaskResponseDTO;
 import com.example.task_collaboration.domain.model.Task;
+import com.example.task_collaboration.domain.model.File;
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TaskMapper {
 
@@ -14,7 +17,7 @@ public class TaskMapper {
         task.setDeadline(dto.deadline());
         task.setStatus(dto.status() != null ? Task.TaskStatus.valueOf(dto.status()) : Task.TaskStatus.PENDING);
         task.setCreatedAt(Instant.now());
-        task.setProject(dto.projectId());
+        // projectId будет установлен в сервисе
         return task;
     }
 
@@ -25,10 +28,20 @@ public class TaskMapper {
                 entity.getDescription(),
                 entity.getDeadline(),
                 entity.getStatus() != null ? entity.getStatus().name() : null,
-                entity.getFileUrl(),
+                entity.getCreatedAt(),
                 entity.getCreatedBy() != null ? entity.getCreatedBy().getId() : null,
                 entity.getAssignee() != null ? entity.getAssignee().getId() : null,
-                entity.getProject() != null ? entity.getProject().getId() : null
+                entity.getProject() != null ? entity.getProject().getId() : null,
+                entity.getFiles() != null ? entity.getFiles().stream().map(TaskMapper::toFileDto).collect(Collectors.toList()) : null
+        );
+    }
+
+    public static TaskResponseDTO.FileResponseDTO toFileDto(File file) {
+        return new TaskResponseDTO.FileResponseDTO(
+            file.getId(),
+            file.getName(),
+            file.getUrl(),
+            file.getUploadedAt()
         );
     }
 

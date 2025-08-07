@@ -9,6 +9,6 @@ import com.example.task_collaboration.domain.model.User;
 import java.util.UUID;
 
 public interface ProfileService {
-    ProfileResponseDTO getProfileByUserId(Long userId);
+    ProfileResponseDTO getProfileByUserId(UUID userId);
     ProfileResponseDTO updateProfile(User currentUser, ProfileRequestDTO profileRequest);
 }

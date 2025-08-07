@@ -53,7 +53,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #userDetails.user.id == taskService.getTaskById(#id, #userDetails.user.id).project.createdById")
+    @PreAuthorize("isAuthenticated()")
     public TaskResponseDTO updateTask(
             @PathVariable UUID id,
             @Valid @ModelAttribute TaskRequestDTO dto,
@@ -62,7 +62,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #userDetails.user.id == taskService.getTaskById(#id, #userDetails.user.id).project.createdById")
+    @PreAuthorize("isAuthenticated()")
     public void deleteTask(
             @PathVariable UUID id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {

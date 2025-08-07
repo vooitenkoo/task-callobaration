@@ -25,16 +25,14 @@ public class ProfileMapperImpl {
             return null;
         }
 
-        ProfileResponseDTO profileResponseDTO = new ProfileResponseDTO();
-        if (profile.getId() != null) {
-            profileResponseDTO.setId(profile.getId());
-        }
-        profileResponseDTO.setDisplayName(profile.getDisplayName());
-        profileResponseDTO.setAvatarUrl(profile.getAvatarUrl());
-        profileResponseDTO.setBio(profile.getBio());
-        profileResponseDTO.setLocation(profile.getLocation());
-        profileResponseDTO.setJobTitle(profile.getJobTitle());
-        return profileResponseDTO;
+        return new ProfileResponseDTO(
+                profile.getId(),
+                profile.getDisplayName(),
+                profile.getAvatarUrl(),
+                profile.getBio(),
+                profile.getLocation(),
+                profile.getJobTitle()
+        );
     }
 
     public void updateProfileFromDto(ProfileRequestDTO profileRequest, Profile existingProfile) {

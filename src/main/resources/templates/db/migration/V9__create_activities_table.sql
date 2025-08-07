@@ -1,4 +1,4 @@
-CREATE TABLE activities (
+CREATE TABLE IF NOT EXISTS activities (
                             id UUID PRIMARY KEY,
                             user_id UUID NOT NULL REFERENCES users(id),
                             task_id UUID REFERENCES tasks(id),

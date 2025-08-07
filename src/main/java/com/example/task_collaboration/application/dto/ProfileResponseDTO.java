@@ -1,13 +1,12 @@
 package com.example.task_collaboration.application.dto;
 
-import lombok.Data;
+import java.util.UUID;
 
-@Data
-public class ProfileResponseDTO {
-    private Long id;
-    private String displayName;
-    private String avatarUrl;
-    private String bio;
-    private String location;
-    private String jobTitle;
-}
+public record ProfileResponseDTO(
+        UUID id,
+        String displayName,
+        String avatarUrl,
+        String bio,
+        String location,
+        String jobTitle
+) {}

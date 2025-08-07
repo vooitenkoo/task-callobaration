@@ -1,4 +1,4 @@
-CREATE TABLE teams (
+CREATE TABLE IF NOT EXISTS teams (
                        id UUID PRIMARY KEY,
                        name VARCHAR(255) NOT NULL,
                        description TEXT,

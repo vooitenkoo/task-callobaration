@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "projects")
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Setter
 public class Project {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(nullable = false, length = 255)
@@ -34,6 +36,9 @@ public class Project {
 
     @Column
     private Instant deadline;
+
+    @OneToMany(mappedBy = "project")
+    private List<ProjectMember> members;
 
     public enum Status {
         ACTIVE, ARCHIVED

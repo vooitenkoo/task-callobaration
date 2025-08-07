@@ -8,6 +8,5 @@ import java.util.UUID;
 
 public interface ProfileRepository extends JpaRepository<Profile, UUID> {
 
-    Optional<Profile> findById(Long id);
-    Optional<Profile> findByUserId(Long userId);
+    Optional<Profile> findByUserId(UUID userId);
 }

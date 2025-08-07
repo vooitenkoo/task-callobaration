@@ -1,4 +1,4 @@
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
                           id UUID PRIMARY KEY,
                           task_id UUID NOT NULL,
                           sender_id UUID NOT NULL,

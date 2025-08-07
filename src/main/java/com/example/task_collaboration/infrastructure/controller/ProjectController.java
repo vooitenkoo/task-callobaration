@@ -46,6 +46,13 @@ public class ProjectController {
         return projectService.getProjectsByUser(userDetails.getUser().getId());
     }
 
+    @GetMapping("/created")
+    @PreAuthorize("isAuthenticated()")
+    public List<ProjectResponseDTO> getProjectsCreatedByUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return projectService.getProjectsCreatedByUser(userDetails.getUser().getId());
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ProjectResponseDTO getProject(
@@ -55,7 +62,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #userDetails.user.id == projectService.getProjectById(#id, #userDetails.user.id).createdById")
+    @PreAuthorize("isAuthenticated()")
     public ProjectResponseDTO updateProject(
             @PathVariable UUID id,
             @Valid @RequestBody ProjectRequestDTO dto,
@@ -63,20 +70,29 @@ public class ProjectController {
         return projectService.updateProject(id, dto, userDetails.getUser().getId());
     }
 
-    @PutMapping("/{id}/lead")
-    @PreAuthorize("hasRole('ADMIN') or #userDetails.user.id == projectService.getProjectById(#id, #userDetails.user.id).createdById")
+    @PutMapping("/{id}/assign-lead")
+    @PreAuthorize("isAuthenticated()")
     public void assignLead(
             @PathVariable UUID id,
-            @RequestBody Long newLeadId,
+            @RequestBody UUID newLeadId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         projectService.assignLead(id, newLeadId, userDetails.getUser().getId());
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #userDetails.user.id == projectService.getProjectById(#id, #userDetails.user.id).createdById")
+    @PreAuthorize("isAuthenticated()")
     public void deleteProject(
             @PathVariable UUID id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         projectService.deleteProject(id, userDetails.getUser().getId());
+    }
+
+    @DeleteMapping("/{projectId}/members/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public void removeProjectMember(
+            @PathVariable UUID projectId,
+            @PathVariable UUID userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        projectService.removeProjectMember(projectId, userId, userDetails.getUser().getId());
     }
 }

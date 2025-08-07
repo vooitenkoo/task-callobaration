@@ -7,6 +7,7 @@ import com.example.task_collaboration.domain.model.Profile;
 import com.example.task_collaboration.domain.model.User;
 import com.example.task_collaboration.domain.repository.ProfileRepository;
 
+import com.example.task_collaboration.domain.repository.UserRepository;
 import com.example.task_collaboration.infrastructure.exсeption.ProfileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -22,17 +24,19 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final MinioService minioStorageService;
     private final ProfileMapperImpl profileMapper;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ProfileServiceImpl(ProfileRepository profileRepository, MinioService minioStorageService, ProfileMapperImpl profileMapper) {
+    public ProfileServiceImpl(ProfileRepository profileRepository, MinioService minioStorageService, ProfileMapperImpl profileMapper, UserRepository userRepository) {
         this.profileRepository = profileRepository;
         this.minioStorageService = minioStorageService;
         this.profileMapper = profileMapper;
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProfileResponseDTO getProfileByUserId(Long userId) {
+    public ProfileResponseDTO getProfileByUserId(UUID userId) {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ProfileNotFoundException(userId));
         logger.debug("Profile from DB: {}", profile);
@@ -57,6 +61,11 @@ public class ProfileServiceImpl implements ProfileService {
         profileMapper.updateProfileFromDto(profileRequest, existingProfile);
         existingProfile.setUpdatedAt(Instant.now());
         profileRepository.save(existingProfile);
+
+        // Синхронизация profile_id (если нужно)
+        if (currentUser.getProfile() != null && currentUser.getProfile().getId() != null) {
+            userRepository.updateProfileId(currentUser.getId(), currentUser.getProfile().getId());
+        }
 
         return profileMapper.toDto(existingProfile);
     }

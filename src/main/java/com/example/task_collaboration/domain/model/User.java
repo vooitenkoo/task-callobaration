@@ -1,5 +1,6 @@
 package com.example.task_collaboration.domain.model;
 
+import com.example.task_collaboration.domain.model.ProjectMember;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
@@ -14,8 +16,8 @@ import java.time.Instant;
 @Setter
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(unique = true, nullable = false, length = 255)
     @NotBlank(message = "Email cannot be empty")
@@ -48,6 +50,9 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<ProjectMember> projectMemberships;
 
     public enum Role {
         USER, ADMIN

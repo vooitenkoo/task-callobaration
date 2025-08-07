@@ -13,6 +13,7 @@ import java.util.UUID;
 @Setter
 public class Task {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(nullable = false, length = 255)
@@ -26,9 +27,6 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskStatus status;
-
-    @Column(length = 255)
-    private String fileUrl;
 
     @Column(nullable = false)
     private Instant createdAt;
@@ -45,6 +43,8 @@ public class Task {
     @JoinColumn(name = "project_id")
     private Project project; // Новая связь
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<File> files;
 
 
     public enum TaskStatus {

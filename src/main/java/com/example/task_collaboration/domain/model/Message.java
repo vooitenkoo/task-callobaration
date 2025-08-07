@@ -13,11 +13,12 @@ import java.util.UUID;
 @Setter
 public class Message {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "task_id", nullable = false)
-    private Task task;
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
@@ -28,4 +29,7 @@ public class Message {
 
     @Column(nullable = false)
     private Instant sentAt;
+
+    @Column(nullable = false)
+    private boolean isRead = false;
 }

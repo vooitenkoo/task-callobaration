@@ -3,7 +3,11 @@ package com.example.task_collaboration.application.mapper;
 import com.example.task_collaboration.application.dto.ProjectRequestDTO;
 import com.example.task_collaboration.application.dto.ProjectResponseDTO;
 import com.example.task_collaboration.domain.model.Project;
+import com.example.task_collaboration.domain.model.ProjectMember;
+import com.example.task_collaboration.domain.model.User;
 import java.time.Instant;
+import java.util.stream.Collectors;
+import java.util.List;
 
 public class ProjectMapper {
 
@@ -14,6 +18,7 @@ public class ProjectMapper {
         project.setDeadline(dto.deadline());
         project.setCreatedAt(Instant.now());
         project.setStatus(Project.Status.ACTIVE); // Установим дефолтное значение
+        // Убираем создание ProjectMember здесь - это будет делаться в сервисе с полными объектами User
         return project;
     }
 
@@ -23,9 +28,19 @@ public class ProjectMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getStatus().name(),
+                entity.getCreatedAt(),
                 entity.getDeadline(),
                 entity.getCreatedBy() != null ? entity.getCreatedBy().getId() : null,
-                entity.getCreatedBy() != null ? entity.getCreatedBy().getId() : null // Временная логика для leadId
+                entity.getCreatedBy() != null ? entity.getCreatedBy().getId() : null, // Временная логика для leadId
+                entity.getMembers() != null ? entity.getMembers().stream().map(ProjectMapper::toMemberDto).collect(Collectors.toList()) : null
+        );
+    }
+
+    public static ProjectResponseDTO.ProjectMemberDTO toMemberDto(ProjectMember member) {
+        return new ProjectResponseDTO.ProjectMemberDTO(
+            member.getUser().getId(),
+            member.getUser().getName(),
+            member.getRole().name()
         );
     }
 
@@ -33,5 +48,6 @@ public class ProjectMapper {
         entity.setName(dto.name());
         entity.setDescription(dto.description());
         entity.setDeadline(dto.deadline());
+        // Убираем создание ProjectMember здесь - это будет делаться в сервисе с полными объектами User
     }
 }

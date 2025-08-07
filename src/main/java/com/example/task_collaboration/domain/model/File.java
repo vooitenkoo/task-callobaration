@@ -13,6 +13,7 @@ import java.util.UUID;
 @Setter
 public class File {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @ManyToOne

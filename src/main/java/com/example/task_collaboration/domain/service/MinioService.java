@@ -44,4 +44,28 @@ public class MinioService {
         // Возвращаем URL для доступа (можно использовать presigned URL для безопасности)
         return  "/" + bucketName + "/" + fileName;
     }
+
+    public String uploadFile(MultipartFile file) throws Exception {
+        // Проверяем, существует ли бакет
+        boolean bucketExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+        if (!bucketExists) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+        }
+
+        // Генерируем уникальное имя файла
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        try (InputStream inputStream = file.getInputStream()) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fileName)
+                            .stream(inputStream, file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+        }
+
+        // Возвращаем URL для доступа
+        return "/" + bucketName + "/" + fileName;
+    }
 }

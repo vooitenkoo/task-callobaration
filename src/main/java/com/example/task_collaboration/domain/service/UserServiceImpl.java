@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,7 +45,10 @@ public class UserServiceImpl implements UserService {
             user.setProfile(profile);
         }
 
-        userRepository.save(user);
+        userRepository.save(user); // Сохраняем пользователя с профилем
+
+        // Явно обновляем profile_id в таблице users
+        userRepository.updateProfileId(user.getId(), user.getId());
     }
 
     @Override
@@ -53,9 +57,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Long newLeadId) {
-        User user = userRepository.findById(newLeadId);
-        return Optional.ofNullable(user);
+    public Optional<User> findById(UUID userId) {
+        return userRepository.findById(userId);
     }
 
 }
