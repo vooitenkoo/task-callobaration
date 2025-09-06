@@ -3,6 +3,8 @@ package com.example.task_collaboration.domain.service;
 import com.example.task_collaboration.domain.model.Profile;
 import com.example.task_collaboration.domain.model.User;
 import com.example.task_collaboration.domain.repository.UserRepository;
+import com.example.task_collaboration.infrastructure.event.UserRegisteredEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +15,11 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher; // Инжекция
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -46,9 +50,10 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user); // Сохраняем пользователя с профилем
-
-        // Явно обновляем profile_id в таблице users
         userRepository.updateProfileId(user.getId(), user.getId());
+
+        // Публикуем событие после успешного сохранения
+        eventPublisher.publishEvent(new UserRegisteredEvent(this, user));
     }
 
     @Override
@@ -60,5 +65,4 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findById(UUID userId) {
         return userRepository.findById(userId);
     }
-
 }

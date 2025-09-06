@@ -46,10 +46,18 @@ public class TaskMapper {
     }
 
     public static void updateEntityFromDto(TaskRequestDTO dto, Task entity) {
-        entity.setTitle(dto.title());
-        entity.setDescription(dto.description());
-        entity.setDeadline(dto.deadline());
-        if (dto.status() != null) entity.setStatus(Task.TaskStatus.valueOf(dto.status()));
-        if (dto.deadline() != null) entity.setDeadline(dto.deadline());
+        if (dto.title() != null) {
+            entity.setTitle(dto.title());
+        }
+        if (dto.description() != null) {
+            entity.setDescription(dto.description());
+        }
+        if (dto.status() != null) {
+            entity.setStatus(Task.TaskStatus.valueOf(dto.status()));
+        }
+        if (dto.deadline() != null) {
+            entity.setDeadline(dto.deadline());
+        }
     }
+
 }

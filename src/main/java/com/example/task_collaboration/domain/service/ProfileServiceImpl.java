@@ -6,17 +6,19 @@ import com.example.task_collaboration.application.mapper.ProfileMapperImpl;
 import com.example.task_collaboration.domain.model.Profile;
 import com.example.task_collaboration.domain.model.User;
 import com.example.task_collaboration.domain.repository.ProfileRepository;
-
 import com.example.task_collaboration.domain.repository.UserRepository;
 import com.example.task_collaboration.infrastructure.exсeption.ProfileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -49,24 +51,31 @@ public class ProfileServiceImpl implements ProfileService {
         Profile existingProfile = profileRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ProfileNotFoundException(currentUser.getId()));
 
+        // Асинхронная загрузка аватара
         if (profileRequest.getAvatarFile() != null && !profileRequest.getAvatarFile().isEmpty()) {
-            try {
-                String avatarUrl = minioStorageService.uploadAvatar(profileRequest.getAvatarFile());
-                existingProfile.setAvatarUrl(avatarUrl);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to upload avatar: " + e.getMessage(), e);
-            }
+            CompletableFuture<String> uploadFuture = uploadAvatarAsync(profileRequest.getAvatarFile());
+            existingProfile.setAvatarUrl(uploadFuture.join()); // Ждём внутри транзакции
         }
 
         profileMapper.updateProfileFromDto(profileRequest, existingProfile);
         existingProfile.setUpdatedAt(Instant.now());
         profileRepository.save(existingProfile);
 
-        // Синхронизация profile_id (если нужно)
         if (currentUser.getProfile() != null && currentUser.getProfile().getId() != null) {
             userRepository.updateProfileId(currentUser.getId(), currentUser.getProfile().getId());
         }
 
         return profileMapper.toDto(existingProfile);
+    }
+
+    @Async // Многопоточность: выполняется в отдельном потоке
+    public CompletableFuture<String> uploadAvatarAsync(MultipartFile avatarFile) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return minioStorageService.uploadAvatar(avatarFile);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload avatar: " + e.getMessage(), e);
+            }
+        });
     }
 }

@@ -1,4 +1,5 @@
 package com.example.task_collaboration.infrastructure.controller;
+
 import com.example.task_collaboration.application.dto.TaskRequestDTO;
 import com.example.task_collaboration.application.dto.TaskResponseDTO;
 import com.example.task_collaboration.domain.model.User;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -39,7 +41,7 @@ public class TaskController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public List<TaskResponseDTO> getTasks(
+    public CompletableFuture<List<TaskResponseDTO>> getTasks(
             @RequestParam(required = false) UUID projectId) {
         return taskService.getTasksByProject(projectId);
     }

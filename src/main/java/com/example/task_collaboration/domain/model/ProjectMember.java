@@ -2,12 +2,14 @@ package com.example.task_collaboration.domain.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "project_members")
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProjectMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +29,10 @@ public class ProjectMember {
 
     public enum ProjectRole {
         OWNER, ADMIN, MEMBER
+    }
+    public ProjectMember(User user, Project project, ProjectRole role) {
+        this.user = user;
+        this.project = project;
+        this.role = role;
     }
 } 

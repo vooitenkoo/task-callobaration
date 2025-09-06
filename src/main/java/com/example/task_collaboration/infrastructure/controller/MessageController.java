@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -48,10 +49,10 @@ public class MessageController {
 
     @PutMapping("/project/{projectId}/read")
     @PreAuthorize("isAuthenticated()")
-    public void markMessagesAsRead(
+    public CompletableFuture<Void> markMessagesAsRead(
             @PathVariable UUID projectId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        messageService.markMessagesAsRead(projectId, userDetails.getUser().getId());
+        return messageService.markMessagesAsRead(projectId, userDetails.getUser().getId());
     }
 
     @GetMapping("/project/{projectId}/unread-count")
@@ -61,4 +62,4 @@ public class MessageController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return messageService.getUnreadMessageCount(projectId, userDetails.getUser().getId());
     }
-} 
+}

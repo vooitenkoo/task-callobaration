@@ -1,6 +1,5 @@
 package com.example.task_collaboration.infrastructure.controller;
 
-
 import com.example.task_collaboration.application.dto.ProjectRequestDTO;
 import com.example.task_collaboration.application.dto.ProjectResponseDTO;
 import com.example.task_collaboration.domain.model.User;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -81,10 +81,10 @@ public class ProjectController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public void deleteProject(
+    public CompletableFuture<Void> deleteProject(
             @PathVariable UUID id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        projectService.deleteProject(id, userDetails.getUser().getId());
+        return projectService.deleteProjectAsync(id, userDetails.getUser().getId());
     }
 
     @DeleteMapping("/{projectId}/members/{userId}")
