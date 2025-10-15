@@ -7,6 +7,7 @@ import com.example.task_collaboration.domain.service.CustomUserDetails;
 import com.example.task_collaboration.domain.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/profile")
+@Tag(name = "Profile", description = "User profile management endpoints")
 public class ProfileController {
     private static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
     private final ProfileService profileService;
