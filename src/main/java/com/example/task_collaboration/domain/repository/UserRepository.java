@@ -16,6 +16,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "UPDATE users SET profile_id = :profileId WHERE id = :userId", nativeQuery = true)
     void updateProfileId(@Param("userId") UUID userId, @Param("profileId") UUID profileId);
 
-
     Optional<User> findByEmail(String email);
+    
+    Optional<User> findByName(String name);
+    
+    Optional<User> findByProviderAndProviderId(User.AuthProvider provider, String providerId);
 }

@@ -11,7 +11,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
+@Table(name = "users", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "email"),
+    @UniqueConstraint(columnNames = {"provider", "provider_id"})
+})
 @Getter
 @Setter
 public class User {
@@ -48,6 +51,20 @@ public class User {
     @NotNull(message = "Created at cannot be null")
     private Instant createdAt = Instant.now();
 
+    // OAuth2 fields
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider")
+    private AuthProvider provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
+
+    @Column(name = "email_verified")
+    private Boolean emailVerified = false;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
 
@@ -56,5 +73,18 @@ public class User {
 
     public enum Role {
         USER, ADMIN
+    }
+
+    public enum AuthProvider {
+        LOCAL, GOOGLE, GITHUB
+    }
+
+    // Helper methods for OAuth2
+    public boolean isOAuth2User() {
+        return provider != null && provider != AuthProvider.LOCAL;
+    }
+
+    public boolean isLocalUser() {
+        return provider == null || provider == AuthProvider.LOCAL;
     }
 }
