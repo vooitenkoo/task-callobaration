@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Демо для Selenium</title>
+</head>
+<body>
+    <h1 id="main-title">Привет, Selenium!</h1>
+    <p class="description">Это тестовая страница для изучения Selenium WebDriver.</p>
+
+    <form id="demo-form">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" name="username" placeholder="Введите имя">
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="test@example.com">
+        <br><br>
+        <button type="submit" id="submit-btn">Отправить</button>
+    </form>
+
+    <div id="result" style="margin-top: 20px; display: none;">
+        <strong>Результат:</strong> <span id="result-text"></span>
+    </div>
+
+    <ul id="items">
+        <li class="item">Элемент 1</li>
+        <li class="item">Элемент 2</li>
+        <li class="item">Элемент 3</li>
+    </ul>
+
+    <script>
+        document.getElementById('demo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            document.getElementById('result-text').textContent = username + ' / ' + email;
+            document.getElementById('result').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

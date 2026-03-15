@@ -1,0 +1,34 @@
+# Запуск приложения в Docker (поверх docker-compose.yml).
+# Сначала: docker-compose up -d
+# Затем:   docker-compose -f docker-compose.yml -f docker-compose.app.yml up -d
+# Или одной командой: docker-compose -f docker-compose.yml -f docker-compose.app.yml up -d
+
+version: '3.8'
+services:
+  app:
+    build: .
+    image: task-collaboration:latest
+    container_name: task-collaboration-app
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/task_platform
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: "6379"
+      MINIO_URL: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET_NAME: avatars
+      # В прод подставьте свои значения или секреты
+      JWT_SECRET: ${JWT_SECRET:-X7kP9mQ2vL5jR8yT3uW6xZ4nB1cE0fH8A9sD0gJ1kL2mN3pQ}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    restart: unless-stopped

@@ -11,7 +11,6 @@ import com.example.task_collaboration.domain.repository.ProjectMemberRepository;
 import com.example.task_collaboration.domain.model.ProjectMember;
 import com.example.task_collaboration.domain.model.File;
 import com.example.task_collaboration.infrastructure.exсeption.AccessDeniedException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;

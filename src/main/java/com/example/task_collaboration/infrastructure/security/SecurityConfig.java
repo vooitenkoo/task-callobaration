@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**").permitAll()
                         .requestMatchers("/login/oauth2/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/webjars/**", "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
-                        .requestMatchers("/ws/**", "/topic/**", "/queue/**", "/app/**").permitAll()
+                        .requestMatchers("/ws/**", "/topic/**", "/queue/**", "/app/**", "/user/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
